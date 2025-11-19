@@ -1,0 +1,32 @@
+
+Documentation of our timezone operations:
+
+- What timezone was your original data in?
+    a. Before we set a timezone, our data is in a 'naive' state/format. 
+    This means that our data did not contain any timezone information at all. 
+    In turn, a time like '09:00:00' could refer to a US Eastern timezone or even a US Western timezone. 
+    We don't know.
+
+- How did you localize the data?
+    a. In order to localize our data, we use the 'tz_localize()' method and set our timezone to UTC, Coordinated Universal Time.
+    We specifically localize our data here: patient_vitals_tz.index = patient_vitals_tz.index.tz_localize('UTC')
+
+- What timezone did you convert to?
+    a. We later converted our timezone from UTC to US Eastern using the 'tz_convert()' method.
+    We specifically convert our data here: patient_vitals_tz_eastern.index = patient_vitals_tz_eastern.tz_convert('US/Eastern') 
+    Note that because we did not want to get rid of our UTC-localized data, we created a new eastern-focused DataFrame for patient vitals.
+
+
+- What issues did you encounter with DST? (Note: Using UTC avoids DST ambiguity)
+    a. While DST (Daylight Saving Time) would normally be an issue with time data, due to 'fall back' and 'spring forward' leading to time ambiguity, we did not face any issues.
+    The reason for this is because UTC remains constant year-round, avoiding DST entirely.
+    In turn, conversion to other timezones, like US Eastern, can be easily made afterwards without any timezone/DST hassle.
+
+
+- Include at least one example showing a datetime before and after conversion
+    a. An example of datetime conversion before and after conversion, following DST transition time:
+    UTC: 2023-03-12 10:00:00+00:00
+    Eastern: 2023-03-12 06:00:00-04:00
+
+- Explain why UTC is recommended as the base timezone for storing temporal data
+    a.  UTC is recommended as a base timezone for storing temporal data because it is a singular, universally accepted time format that helps avoid complications that arise from timezones and DST.

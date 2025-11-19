@@ -1,0 +1,96 @@
+
+Documentation of our missing data handling:
+
+- How many missing values did you find?
+    a. In our time series dataset, we found the number of missing values using: 'ts_with_missing.isna().sum()' 
+    The number of missing values was: 323.
+
+- What percentage of data was missing?
+    a. We then calculated the percentage of data that was missing using: 'ts_with_missing.isna().sum() / len(ts_with_missing) * 100'
+    The percentage of data missing was: 96.41791044776119
+
+- Which method did you use to fill missing values?
+    a. In order to fill in the missing values, we tried the following methods: 
+        (1) Forward Fill
+        (2) Backward Fill 
+        (3) Interpolation (Linear)
+        (4) Interpolation (Time-based)
+        (5) Rolling Mean (7-Day)
+    Note that, because our dataset was so sparse originally, the 7-Day rolling mean did not actually fill in missing values.
+    Observe from the following code: 'ts_rolling_imputed.isna().sum()' (323)
+
+- Why did you choose that method?
+    a. Ignoring the rolling mean method because of its inability to fill missing values in our data, I did not choose forward fill or backward fill. 
+    While these methods would have done the job in filling in missing values, as roughly 96% of our data are missing values, we would essentially be generating a dataset with only 12 unique values.
+    As such, both methods fall flat for any prediction purposes. As for the linear and time-based interpolation methods, I ultimately would choose to go with the linear one.
+    From a technical standpoint, both methods should produce the same results given that there is no time irregularity in our dataset since the missingness was artificially introduced through upsampling.
+
+- What are the pros/cons of your approach?
+    a. As for the advantage, linear interpolation is a relatively well-established method that provides a somewhat reasonable guess about our data's trends.
+    It doesn't use future information rashly, like with backward fill, which would otherwise cause issues if we tried to make statements about causality. 
+    As for the cons, as we are using a linear interpolation method, we naturally have to assume that the behavior of temperature is linear. 
+    In turn, we are naturally unable to capture the day-to-day fluctuations. Things like a patient getting sick and them taking antibiotics all gets smoothed over.
+
+- Include examples showing missing data patterns
+    a. Without imputation, we will see a temperature count on '2023-01-31', followed by 'NaN' until '2023-02-28'.
+    With imputation (linear), we will see that those 'NaN' gaps are filled.
+                 Original  Linear Interpolation
+date                                       
+2023-01-31  98.777000             98.777000
+2023-02-01        NaN             98.785011
+2023-02-02        NaN             98.793021
+2023-02-03        NaN             98.801031
+2023-02-04        NaN             98.809041
+2023-02-05        NaN             98.817052
+2023-02-06        NaN             98.825062
+2023-02-07        NaN             98.833072
+2023-02-08        NaN             98.841082
+2023-02-09        NaN             98.849092
+2023-02-10        NaN             98.857103
+2023-02-11        NaN             98.865113
+2023-02-12        NaN             98.873123
+2023-02-13        NaN             98.881133
+2023-02-14        NaN             98.889143
+2023-02-15        NaN             98.897154
+2023-02-16        NaN             98.905164
+2023-02-17        NaN             98.913174
+2023-02-18        NaN             98.921184
+2023-02-19        NaN             98.929195
+2023-02-20        NaN             98.937205
+2023-02-21        NaN             98.945215
+2023-02-22        NaN             98.953225
+2023-02-23        NaN             98.961235
+2023-02-24        NaN             98.969246
+2023-02-25        NaN             98.977256
+2023-02-26        NaN             98.985266
+2023-02-27        NaN             98.993276
+2023-02-28  99.001287             99.001287
+
+
+Missing patterns:
+Missing by month:
+date
+1      0
+2     27
+3     30
+4     29
+5     30
+6     29
+7     30
+8     30
+9     29
+10    30
+11    29
+12    30
+Name: temperature, dtype: int64
+
+Missing by day of week:
+date
+0    46
+1    45
+2    47
+3    46
+4    46
+5    47
+6    46
+Name: temperature, dtype: int64
